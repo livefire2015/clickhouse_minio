@@ -1,0 +1,18 @@
+version: '2.3'
+
+services:
+  minio1:
+    image: minio/minio
+    volumes:
+      - data1-1:/data1
+    ports:
+      - "9001:9001"
+    environment:
+      MINIO_ACCESS_KEY: minio
+      MINIO_SECRET_KEY: minio1
+    command: server --address :9001 /data1-1
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9001/minio/health/live"]
+      interval: 2s
+      timeout: 5s
+      retries: 60
