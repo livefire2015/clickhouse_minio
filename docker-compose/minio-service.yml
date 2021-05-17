@@ -1,7 +1,7 @@
 version: '2.3'
 
 services:
-  minio1:
+  minio:
     image: minio/minio
     volumes:
       - data1-1:/data1
