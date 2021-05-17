@@ -1,5 +1,8 @@
 version: '2.3'
 
+volumes:
+  data1-1:
+
 services:
   minio:
     extends:
