@@ -9,10 +9,11 @@ services:
       - "9001:9001"
     environment:
       MINIO_ACCESS_KEY: minio
-      MINIO_SECRET_KEY: minio1
+      MINIO_SECRET_KEY: minio123
     command: server --address :9001 /data1-1
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9001/minio/health/live"]
       interval: 2s
       timeout: 5s
       retries: 60
+
