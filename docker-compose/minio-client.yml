@@ -5,7 +5,7 @@ services:
     image: minio/mc
     entrypoint: >
      /bin/sh -c "
-     /usr/bin/mc config host add minio http://minio:9001 minio minio1;
+     /usr/bin/mc config host add minio http://minio:9001 minio minio123;
      /usr/bin/mc mb minio/root;
      touch /tmp/ready;
      "
@@ -14,3 +14,4 @@ services:
       interval: 5s
       timeout: 2s
       retries: 60
+
