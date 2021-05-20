@@ -19,6 +19,7 @@ The following services are provided by the `docker-compose` cluster.
 * `clickhouse3` - ClickHouse node 3
 * `zookeeper` - Zookeeper node
 * `minio` - MinIO node
+* `minio-client` - MinIO client node
 
 ## How To Run
 
@@ -65,6 +66,18 @@ docker-compose_zookeeper_1            /docker-entrypoint.sh zkSe ...   Up (healt
 
 ### Working With Services
 
+### MinIO
+
+The MinIO client can be used to access MinIO. The `minio-client.yml` file will
+create a bucket `root`, but any `mc` commands can be used to interact with MinIO
+to create new buckets, delete buckets, and manage objects.
+
+```bash
+docker-compose exec minio-client mc ls
+```
+
+A full list of commands can be found in the [MinIO Client Quickstart Guide].
+
 ### ClickHouse Nodes
 
 ```bash
@@ -82,3 +95,4 @@ docker-compose exec clickhouse3 bash -c 'clickhouse-client -q "SELECT version()"
 [git]: https://git-scm.com/
 [docker]: https://www.docker.com/
 [docker-compose]: https://docs.docker.com/compose/
+[MinIO Client Quickstart Guide]: https://docs.min.io/docs/minio-client-quickstart-guide.html
