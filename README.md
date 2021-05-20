@@ -59,9 +59,9 @@ docker-compose_all_services_ready_1   /hello                           Exit 0
 docker-compose_clickhouse1_1          bash -c clickhouse server  ...   Up (healthy)   8123/tcp, 9000/tcp, 9009/tcp    
 docker-compose_clickhouse2_1          bash -c clickhouse server  ...   Up (healthy)   8123/tcp, 9000/tcp, 9009/tcp    
 docker-compose_clickhouse3_1          bash -c clickhouse server  ...   Up (healthy)   8123/tcp, 9000/tcp, 9009/tcp    
-docker-compose_minio-client_1         /bin/sh -c  /usr/bin/mc co ...   Exit 0                                         
+docker-compose_minio-client_1         /bin/sh -c  /usr/bin/mc co ...   Up (healthy)                                   
 docker-compose_minio_1                /usr/bin/docker-entrypoint ...   Up (healthy)   9000/tcp, 0.0.0.0:9001->9001/tcp
-docker-compose_zookeeper_1            /docker-entrypoint.sh zkSe ...   Up (healthy)   2181/tcp, 2888/tcp, 3888/tcp    
+docker-compose_zookeeper_1            /docker-entrypoint.sh zkSe ...   Up (healthy)   2181/tcp, 2888/tcp, 3888/tcp   
 ```
 
 ### Working With Services
