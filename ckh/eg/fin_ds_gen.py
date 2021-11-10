@@ -5,6 +5,10 @@ from time import time
 import numpy as np
 import pandas as pd
 from clickhouse_driver import Client
+from dotenv import load_dotenv
+
+load_dotenv()  # take environment variables from .env.
+
 
 # ClickHouse Ops
 host = os.environ.get("CLICKHOUSE_HOST", "localhost")
