@@ -1,0 +1,78 @@
+version: '2.3'
+
+volumes:
+  data1-1:
+
+services:
+  minio:
+    extends:
+      file: ./minio/minio-service.yml
+      service: minio
+
+  minio-client:
+    extends:
+      file: ./minio/minio-client.yml
+      service: minio-client
+    depends_on:
+      minio:
+        condition: service_healthy
+
+  zookeeper:
+    extends:
+      file: ./zk/zookeeper-service.yml
+      service: zookeeper
+
+  clickhouse1:
+    extends:
+      file: ./ckh/ops/clickhouse-service.yml
+      service: clickhouse
+    hostname: clickhouse1
+    volumes:
+      - "./ckh/ops/_instances/clickhouse1/database/:/var/lib/clickhouse/"
+      - "./ckh/ops/_instances/clickhouse1/logs/:/var/log/clickhouse-server/"
+      - "./ckh/ops/configs/clickhouse1/config.d/macros.xml:/etc/clickhouse-server/config.d/macros.xml"
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+
+  clickhouse2:
+    extends:
+      file: ./ckh/ops/clickhouse-service.yml
+      service: clickhouse
+    hostname: clickhouse2
+    volumes:
+      - "./ckh/ops/_instances/clickhouse2/database/:/var/lib/clickhouse/"
+      - "./ckh/ops/_instances/clickhouse2/logs/:/var/log/clickhouse-server/"
+      - "./ckh/ops/configs/clickhouse2/config.d/macros.xml:/etc/clickhouse-server/config.d/macros.xml"
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+
+  clickhouse3:
+    extends:
+      file: ./ckh/ops/clickhouse-service.yml
+      service: clickhouse
+    hostname: clickhouse3
+    volumes:
+      - "./ckh/ops/_instances/clickhouse3/database/:/var/lib/clickhouse/"
+      - "./ckh/ops/_instances/clickhouse3/logs/:/var/log/clickhouse-server/"
+      - "./ckh/ops/configs/clickhouse3/config.d/macros.xml:/etc/clickhouse-server/config.d/macros.xml"
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+
+  # dummy service which does nothing, but allows to postpone 
+  # 'docker-compose up -d' till all dependecies will go healthy
+  all_services_ready:
+    image: hello-world
+    depends_on:
+      clickhouse1:
+        condition: service_healthy
+      clickhouse2:
+        condition: service_healthy
+      clickhouse3:
+        condition: service_healthy
+      zookeeper:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
