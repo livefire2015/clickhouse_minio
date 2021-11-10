@@ -3,6 +3,10 @@ version: '3.7'
 volumes:
   data1-1:
 
+networks: 
+  default:
+    name: backend-net
+
 services:
   minio:
     extends:

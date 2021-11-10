@@ -72,3 +72,7 @@ volumes:
     external: false
   redis:
     external: false
+
+networks: 
+  default:
+    name: backend-net
