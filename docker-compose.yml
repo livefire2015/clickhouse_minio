@@ -31,6 +31,8 @@ services:
       - "./ckh/ops/_instances/clickhouse1/database/:/var/lib/clickhouse/"
       - "./ckh/ops/_instances/clickhouse1/logs/:/var/log/clickhouse-server/"
       - "./ckh/ops/configs/clickhouse1/config.d/macros.xml:/etc/clickhouse-server/config.d/macros.xml"
+    ports:
+      - "9000:9000"
     depends_on:
       zookeeper:
         condition: service_healthy
