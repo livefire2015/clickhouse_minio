@@ -1,0 +1,4 @@
+clickhouse-driver
+pandas
+numpy
+matplotlib
