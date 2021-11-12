@@ -97,6 +97,29 @@ docker-compose exec clickhouse3 bash -c 'clickhouse-client -q "SELECT version()"
 [docker-compose]: https://docs.docker.com/compose/
 [MinIO Client Quickstart Guide]: https://docs.min.io/docs/minio-client-quickstart-guide.html
 
+### Init DB
+
+ --> Dataframe generation with 10,000 rows x 100 cols and a 1000-array col ...  --> done in 0.16 sec
+ --> Memory used = 29.1 MBytes
+/home/yyz/workspace/ClickHouse/clickhouse_minio/ckh/eg/.venv/lib/python3.9/site-packages/clickhouse_driver/columns/datetimecolumn.py:199: PytzUsageWarning: The zone attribute is specific to pytz's interface; please migrate to a new time zone provider. For more details on how to do so, see https://pytz-deprecation-shim.readthedocs.io/en/latest/migration.html
+  local_timezone = get_localzone().zone
+INSERT INTO TABLE finCube.factTable ... done  in 5.91 sec
+
+Self copy to partition 1, from 10,000 to 20,000 rows in 0.193 secs.
+Self copy to partition 2, from 20,000 to 40,000 rows in 0.296 secs.
+Self copy to partition 3, from 40,000 to 80,000 rows in 0.726 secs.
+Self copy to partition 4, from 80,000 to 160,000 rows in 1.021 secs.
+Self copy to partition 5, from 160,000 to 320,000 rows in 3.786 secs.
+Self copy to partition 6, from 320,000 to 520,000 rows in 2.835 secs.
+Self copy to partition 7, from 520,000 to 720,000 rows in 2.232 secs.
+Self copy to partition 8, from 720,000 to 920,000 rows in 2.065 secs.
+Self copy to partition 9, from 920,000 to 1,120,000 rows in 1.918 secs.
+Self copy to partition 10, from 1,120,000 to 1,320,000 rows in 1.654 secs.
+Self copy to partition 11, from 1,320,000 to 1,520,000 rows in 1.713 secs.
+Self copy to partition 12, from 1,520,000 to 1,720,000 rows in 1.657 secs.
+
+Data generated and inserted in total 26.4 secs.
+
 # Connecting your local database instance to superset
 
 SQLALCHEMY URI: 
