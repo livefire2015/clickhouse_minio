@@ -136,33 +136,28 @@ print(f" --> done in {t1-t0:.2f} sec")
 print(f" --> Memory used = {result.memory_usage(deep=True).sum()/1e6:,.1f} MBytes")
 t0 = t1
 
+# Drop and (re) create database in ClickHouse
+client.execute(f"DROP DATABASE IF EXISTS finCube")
+client.execute(f"CREATE DATABASE IF NOT EXISTS finCube")
+
 # Drop and (re) create table in Clickhouse
-client.execute(f"DROP TABLE IF EXISTS factTable")
+client.execute(f"DROP TABLE IF EXISTS finCube.factTable")
 flds_spec_ckh = [
     f"`{col}` {convert_type(col_type= typ, value= result[col].iloc[0])}"
     for col, typ in result.dtypes.iteritems()
 ]
 create_table_ckh = (
-    f"CREATE TABLE IF NOT EXISTS factTable ({', '.join(flds_spec_ckh)}) "
+    f"CREATE TABLE IF NOT EXISTS finCube.factTable ({', '.join(flds_spec_ckh)}) "
     "ENGINE = MergeTree() PARTITION BY partition ORDER BY tuple() "
     "SETTINGS index_granularity = 8192"
 )
 client.execute(create_table_ckh)
 
-# export create table statement in POSTGRESQL
-flds_spec_ps = [
-    f"`{col}` {convert_type_ps(col_type= typ, value= result[col].iloc[0])}"
-    for col, typ in result.dtypes.iteritems()
-]
-create_table_ps = f"CREATE TABLE IF NOT EXISTS factTable ({', '.join(flds_spec_ps)})"
-with open("create_table_ps.sql", "w") as f:
-    f.write(create_table_ps)
-
 # Insert into
-print(f"INSERT INTO TABLE factTable ... ", end="")
+print(f"INSERT INTO TABLE finCube.factTable ... ", end="")
 t0 = time()
 client.execute(
-    "INSERT INTO TABLE factTable VALUES", list(result.itertuples(index=False))
+    "INSERT INTO TABLE finCube.factTable VALUES", list(result.itertuples(index=False))
 )
 print(f"done  in {time()-t0:.2f} sec\n")
 
@@ -180,23 +175,23 @@ sql_flds.update(
 )
 # Create several partitions by copying existing dataset
 for part in range(1, nb_part):
-    nextIndex = client.execute("select max(index) from factTable")[0][0] + 1
+    nextIndex = client.execute("select max(index) from finCube.factTable")[0][0] + 1
     sql_flds.update(
         {"index": f"index + {nextIndex} as index", "partition": f"{part} as partition"}
     )
 
     t0 = time()
     client.execute(
-        f"INSERT INTO TABLE factTable ({','.join(sql_flds.keys())}) SELECT {','.join(sql_flds.values())} FROM factTable WHERE index < {nextIndex} + 200000"
+        f"INSERT INTO TABLE finCube.factTable ({','.join(sql_flds.keys())}) SELECT {','.join(sql_flds.values())} FROM finCube.factTable WHERE index < {nextIndex} + 200000"
     )
     print(
-        f"Self copy to partition {part}, from {nextIndex:,d} to {client.execute('select count() from factTable')[0][0]:,d} rows in {time()-t0:.3f} secs."
+        f"Self copy to partition {part}, from {nextIndex:,d} to {client.execute('select count() from finCube.factTable')[0][0]:,d} rows in {time()-t0:.3f} secs."
     )
 
 print(f"\nData generated and inserted in total {time()-t9:.1f} secs.")
 
 
 # create table with array unfolded
-# create table factred as factTable
+# create table factred as finCube.factTable
 # alter table factred modify column arrFloat float
-# insert into factred select * from factTable ARRAY JOIN arrFloat as arrFloat WHERE index < 2
+# insert into factred select * from finCube.factTable ARRAY JOIN arrFloat as arrFloat WHERE index < 2
