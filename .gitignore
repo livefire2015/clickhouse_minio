@@ -1,2 +1,11 @@
 _instances/
 .venv
+
+## Python
+.vscode
+__pycache__
+.idea
+.pytest_cache
+*.pyc
+*.sqlite
+.coverage
