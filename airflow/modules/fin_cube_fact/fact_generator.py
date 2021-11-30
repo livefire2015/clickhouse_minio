@@ -1,8 +1,6 @@
 import re
-from dataclasses import dataclass
 import string
 import random
-from time import time
 import numpy as np
 import pandas as pd
 
@@ -12,7 +10,8 @@ class FactGenerator:
         self.fdf = FactDataFrame(arr_length, nb_rows, nb_part)
 
     def get_fact_stream(self):
-        for entry in self.fdf.create():
+        # Iterate over DataFrame rows as namedtuples
+        for entry in self.fdf.create().itertuples(index=False):
             yield entry
 
 

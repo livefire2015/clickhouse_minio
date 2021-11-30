@@ -44,7 +44,7 @@ class FinCubeFactOperator(BaseOperator):
                     validator.validate_fact(fact)
                     exporter.export_fact_to_broker(
                         self.topic,
-                        fact
+                        fact._asdict()
                     )
             except Exception as err:
                 self.logger.error(f"Exception: {err}")

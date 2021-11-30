@@ -72,8 +72,7 @@ def fin_cube_fact():
             nb_rows=config.NB_ROWS,
             nb_part=config.NB_PART,
             bootstrap_servers=config.BOOTSTRAP_SERVERS,
-            topic=config.TOPIC,
-            dag=dag
+            topic=config.TOPIC
         )
 
     @task()

@@ -1,91 +1,25 @@
-from pkg_resources import resource_string
 import pytest
-import fakeredis
+import pandas as pd
 
-from parser import WebParser
+from collections import namedtuple
 from requests import Response
-from rss_news import NewsProducer, NewsFormatter, NewsValidator, News
-from proxypool import ProxyPoolScraper, ProxyRecord
 from retry import RetryOnException as retry
-
-
-TEST_URL = "https://test.com"
-
-
-@pytest.fixture
-def web_parser():
-    yield WebParser(TEST_URL)
+from fin_cube_fact import FactGenerator, FactValidator
 
 
 @pytest.fixture
-def scraper():
-    yield ProxyPoolScraper(TEST_URL)
-
-
-@pytest.fixture
-def proxies():
-    yield [
-        {
-            "http": "http://127.0.0.1:8080",
-            "https": "http://127.0.0.1:8080"
-        }
-    ]
-
-
-@pytest.fixture
-def proxy_record():
-    yield ProxyRecord(
-        "127.0.0.1",
-        8080,
-        "PL",
-        "POLAND",
-        "gold",
-        "no",
-        "no",
-        "30 minutes ago"
-    )
-
-
-@pytest.fixture
-def producer():
-    yield NewsProducer(TEST_URL, "en")
-
-
-@pytest.fixture
-def formatter():
-    yield NewsFormatter("en")
+def generator():
+    yield FactGenerator(1, 1, 1)
 
 
 @pytest.fixture
 def validator():
-    yield NewsValidator(
+    yield FactValidator(
         {
             "description_length": 10,
             "languages": ["en"]
         }
     )
-
-
-@pytest.fixture
-def news_record():
-    yield News(
-        "test_id", "test_title", "test_link",
-        "test_pub", "test_desc", "test_author", "en"
-    )
-
-
-@pytest.fixture
-def redis_mock():
-    yield fakeredis.FakeStrictRedis()
-
-
-@pytest.fixture
-def redis_config():
-    yield {
-        "host": "redis",
-        "port": "6379",
-        "db": 0
-    }
 
 
 @pytest.fixture
@@ -99,17 +33,6 @@ def response():
 
 
 @pytest.fixture
-def raw_content():
-    def helper(filename):
-        return resource_string(
-            "tests",
-            f"dataresources/{filename}"
-        )
-
-    yield helper
-
-
-@pytest.fixture
 def add_function():
 
     @retry(5)
@@ -117,3 +40,13 @@ def add_function():
         return a + b
 
     yield func
+
+@pytest.fixture
+def fact_record():
+    Pandas = namedtuple('Pandas', ['int0', 'int33', 'str0', 'str32', 'arrFloat', 'partition'])
+    yield  Pandas(int0=-694289, int33=-694, str0='yWAcqGFzYtEwLnGis', str32='yWAcqGFzYtEwLnGis', arrFloat=pd.array([844265.74858102]), partition=0)
+
+@pytest.fixture
+def fact_record_bad():
+    Pandas = namedtuple('Pandas', ['int0', 'int33', 'str0', 'str32', 'arrFloat', 'partition'])
+    yield  Pandas(int0=-694289, int33=None, str0='yWAcqGFzYtEwLnGis', str32='yWAcqGFzYtEwLnGis', arrFloat=pd.array([844265.74858102]), partition=0)
