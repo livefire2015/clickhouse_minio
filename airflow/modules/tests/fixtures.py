@@ -47,6 +47,10 @@ def fact_record():
     yield  Pandas(int0=-694289, int33=-694, str0='yWAcqGFzYtEwLnGis', str32='yWAcqGFzYtEwLnGis', arrFloat=pd.array([844265.74858102]), partition=0)
 
 @pytest.fixture
+def fact_dict():
+    yield {'int0': 694289, 'int33': 694, 'str0': 'yWAcqGFzYtEwLnGis', 'str32': 'yWAcqGFzYtEwLnGis', 'arrFloat': pd.array([844265.74858102]), 'partition': 0}
+
+@pytest.fixture
 def fact_record_bad():
     Pandas = namedtuple('Pandas', ['int0', 'int33', 'str0', 'str32', 'arrFloat', 'partition'])
     yield  Pandas(int0=-694289, int33=None, str0='yWAcqGFzYtEwLnGis', str32='yWAcqGFzYtEwLnGis', arrFloat=pd.array([844265.74858102]), partition=0)

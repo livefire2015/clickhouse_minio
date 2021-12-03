@@ -1,6 +1,6 @@
 import pytest
 
-from ..fixtures import validator, fact_record, fact_record_bad
+from ..fixtures import validator, fact_record, fact_dict, fact_record_bad
 
 
 def test_check_null_values(validator, fact_record):
@@ -12,6 +12,9 @@ def test_check_null_values(validator, fact_record):
     
     assert result is expected
 
+def test_validate_fact_dict(validator, fact_dict):
+
+    validator.validate_fact(fact_dict)
 
 def test_validate_fact_raises_error(validator, fact_record_bad):
     
