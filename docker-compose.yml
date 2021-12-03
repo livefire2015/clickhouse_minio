@@ -95,6 +95,40 @@ services:
     depends_on:
       - kafka
 
+  postgres:
+    container_name: postgres
+    image: postgres:13.4
+    environment:
+        - POSTGRES_USER=${AIRFLOW}
+        - POSTGRES_PASSWORD=${AIRFLOW}
+        - POSTGRES_DB=${AIRFLOW}
+    logging:
+        options:
+            max-size: 10m
+            max-file: "3"        
+
+  airflow:
+    container_name: airflow
+    build: ./airflow
+    restart: unless-stopped
+    logging:
+        options:
+            max-size: 10m
+            max-file: "3"
+    command: ["webserver"]
+    ports:
+        - 8080:8080
+    volumes:
+        - ./airflow/dags:/usr/local/airflow/dags
+        - ./airflow/modules:/usr/local/airflow/modules
+    healthcheck:
+        test: ["CMD-SHELL", "[ -f /usr/local/airflow/airflow-webserver.pid ]"]
+        interval: 30s
+        timeout: 30s
+        retries: 3
+    depends_on:
+        - postgres
+
   # dummy service which does nothing, but allows to postpone 
   # 'docker-compose up -d' till all dependecies will go healthy
   all_services_ready:
@@ -109,4 +143,6 @@ services:
       zookeeper:
         condition: service_healthy
       minio:
+        condition: service_healthy
+      airflow:
         condition: service_healthy
