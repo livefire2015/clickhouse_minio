@@ -1,12 +1,14 @@
 import json
 from datetime import datetime, timedelta
-import string
+import logging
 
 from airflow.decorators import dag, task
 
 from dags_config import Config as config
-from custom_operators import (
-    FinCubeFactOperator
+from fin_cube_fact import (
+    FactGenerator,
+    FactExporter,
+    FactValidator
 )
 
 @dag(schedule_interval="1-59 * * * *", start_date=datetime(2021, 1, 1), catchup=False, tags=["example"])
@@ -52,7 +54,7 @@ def tutorial_taskflow_api_etl():
     order_summary = transform(order_data)
     load(order_summary["total_order_value"])
 
-@dag(schedule_interval="1-59/10 * * * *", start_date=datetime(2021, 1, 1), catchup=False, tags=["example"])
+@dag(schedule_interval="1-59/10 * * * *", start_date=datetime(2021, 1, 1), catchup=False, tags=["FinCube"])
 def fin_cube_fact():
     """
     ### Simulate credit card transactions every 10 seconds
@@ -65,15 +67,21 @@ def fin_cube_fact():
 
     @task()
     def event(config):
-        return FinCubeFactOperator(
-            task_id=f"exporting_fact_to_broker",
-            validator_config=config.VALIDATOR_CONFIG,
-            arr_length=config.ARRAY_LENGTH,
-            nb_rows=config.NB_ROWS,
-            nb_part=config.NB_PART,
-            bootstrap_servers=config.BOOTSTRAP_SERVERS,
-            topic=config.TOPIC
-        )
+        validator = FactValidator(config.VALIDATOR_CONFIG)
+        generator = FactGenerator(config.ARRAY_LENGTH, config.NB_ROWS, config.NB_PART)
+
+        with FactExporter(config.BOOTSTRAP_SERVERS) as exporter:
+            try:
+                for fact in generator.get_fact_stream():
+                    logging.info(fact)
+                    validator.validate_fact(fact)
+                    exporter.export_fact_to_broker(
+                        config.TOPIC,
+                        fact._asdict()
+                    )
+            except Exception as err:
+                logging.error(f"Exception: {err}")
+                raise err
 
     @task()
     def finish():
@@ -85,3 +93,4 @@ def fin_cube_fact():
 
 
 # tutorial_etl_dag = tutorial_taskflow_api_etl()
+fin_cube_fact_dag = fin_cube_fact()
