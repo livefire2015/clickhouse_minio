@@ -12,10 +12,14 @@ elif [ $argument = "stop" ]; then
     docker-compose -f superset/superset-service.yml stop
 elif [ $argument = "down" ]; then
     echo "Deleting infrastructure..."
+    docker-compose stop
+    docker-compose -f superset/superset-service.yml stop
     docker-compose down -v
     docker-compose -f superset/superset-service.yml down -v
 elif [ $argument = "restart" ]; then
     echo "Restarting infrastructure..."
+    docker-compose stop
+    docker-compose -f superset/superset-service.yml stop
     docker-compose down -v
     docker-compose -f superset/superset-service.yml down -v
     docker-compose up -d
