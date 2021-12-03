@@ -54,8 +54,11 @@ def tutorial_taskflow_api_etl():
     order_summary = transform(order_data)
     load(order_summary["total_order_value"])
 
-@dag(schedule_interval="1-59/10 * * * *", start_date=datetime(2021, 1, 1), catchup=False, tags=["FinCube"])
+@dag(schedule_interval="1-59/1 * * * *", start_date=datetime(2021, 1, 1), catchup=False, tags=["FinCube"])
 def fin_cube_fact():
+    validator = FactValidator(config.VALIDATOR_CONFIG)
+    generator = FactGenerator(config.ARRAY_LENGTH, config.NB_ROWS, config.NB_PART)
+
     """
     ### Simulate credit card transactions every 10 seconds
     Generate random numbers and strings for credit card transactions,
@@ -66,10 +69,7 @@ def fin_cube_fact():
         return f"{datetime.now()}:  starting!"
 
     @task()
-    def event(config):
-        validator = FactValidator(config.VALIDATOR_CONFIG)
-        generator = FactGenerator(config.ARRAY_LENGTH, config.NB_ROWS, config.NB_PART)
-
+    def event():
         with FactExporter(config.BOOTSTRAP_SERVERS) as exporter:
             try:
                 for fact in generator.get_fact_stream():
@@ -87,9 +87,11 @@ def fin_cube_fact():
     def finish():
         return f"{datetime.now()}:  finishing!"
 
-    start()
-    event(config)
-    finish()
+    st = start()
+    facts = event()
+    fi = finish()
+
+    st >> facts >> fi
 
 
 # tutorial_etl_dag = tutorial_taskflow_api_etl()
