@@ -69,8 +69,11 @@ class FactDataFrame:
         ).reset_index()
 
         if self._arr_length > 0:
-            result["arrFloat"] = list(np.random.rand(self._nb_rows, self._arr_length) * 1e6)
-        
+            result["arrFloat"] = (np.random.rand(self._nb_rows, self._arr_length) * 1e6).tolist()
+
         result["partition"] = np.random.randint(self._nb_part)
+
+        for i in range(33):
+            result[f"dttime{i}"] = result[f"dttime{i}"].astype(str)
 
         return result

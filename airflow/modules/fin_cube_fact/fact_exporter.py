@@ -22,7 +22,7 @@ class FactExporter:
     def __enter__(self):
         return self
 
-    def export_record_to_broker(self, topic, record, sleep_time=0.01):
+    def export_fact_to_broker(self, topic, record, sleep_time=0.01):
         response = self._producer.send(
             topic,
             value=record
