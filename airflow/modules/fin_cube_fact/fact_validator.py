@@ -5,7 +5,7 @@ class FactValidator:
         self._config = config
 
     def validate_fact(self, fact):
-        fact = fact._asdict()
+        fact = fact if isinstance(fact, dict) else fact._asdict()
         assert self.check_null_values(fact), "Null values!"
 
     def check_null_values(self, fact):
